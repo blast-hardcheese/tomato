@@ -149,6 +149,10 @@ impl FromStr for TomlVal {
             Value::try_from(v).unwrap()
         } else if let Ok(v) = f64::from_str(s) {
             Value::try_from(v).unwrap()
+        } else if s == "[]" {
+            Value::Array(toml_edit::Array::new())
+        } else if s == "{}" {
+            Value::InlineTable(toml_edit::InlineTable::new())
         } else {
             s.into()
         };
