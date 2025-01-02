@@ -670,6 +670,60 @@ mod tests {
     }
 
     #[test]
+    fn tomlval_parser_handles_inline_tables() {
+        let quoted = r#""{}""#;
+        let tval = TomlVal::from_str(quoted).expect("conversion should work");
+        match tval.inner {
+            Value::String(s) => {
+                assert_eq!(*s.value(), "{}");
+            }
+            _ => {
+                eprintln!("{:?}", tval.inner);
+                assert!(false, "should have been a string");
+            }
+        }
+
+        let inty = "{}";
+        let tval2 = TomlVal::from_str(inty).expect("conversion should work");
+        match tval2.inner {
+            Value::InlineTable(t) => {
+                assert_eq!(t.len(), 0);  // It should be empty to start
+            }
+            _ => {
+                eprintln!("{:?}", tval2.inner);
+                assert!(false, "should have been an inline table");
+            }
+        }
+    }
+
+    #[test]
+    fn tomlval_parser_handles_inline_arrays() {
+        let quoted = r#""[]""#;
+        let tval = TomlVal::from_str(quoted).expect("conversion should work");
+        match tval.inner {
+            Value::String(s) => {
+                assert_eq!(*s.value(), "[]");
+            }
+            _ => {
+                eprintln!("{:?}", tval.inner);
+                assert!(false, "should have been a string");
+            }
+        }
+
+        let inty = "[]";
+        let tval2 = TomlVal::from_str(inty).expect("conversion should work");
+        match tval2.inner {
+            Value::Array(a) => {
+                assert_eq!(a.len(), 0);  // It should be empty to start
+            }
+            _ => {
+                eprintln!("{:?}", tval2.inner);
+                assert!(false, "should have been an array");
+            }
+        }
+    }
+
+    #[test]
     fn can_set_booleans() {
         let toml = include_str!("../fixtures/sample.toml");
         let mut doc = toml
